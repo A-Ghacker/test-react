@@ -3,8 +3,13 @@ pipeline {
     environment {
         CI = 'true'
     }
+    
+    triggers {
+        pollSCM('* * * * *')
+    }
+    
     stages {
-        stage('self monitoring') {
+        stage('Auto-monitoring') {
             steps {
                 sh 'pwd'
                 sh 'ls -alihs'
@@ -12,33 +17,35 @@ pipeline {
                 sh "printenv | sort"
             }
         }
+        
         stage('Build') {
             steps {
                 sh 'npm i'
             }
         }
-        stage('start'){
+        
+        stage('Démarrage') {
             steps {
                 sh 'npm start'
             }
         }
-        /*stage('Test') {
-            steps {
-                 
-                sh './jenkins/scripts/test.sh'
-            }
+    }
+    
+    post {
+        success {
+            emailext(
+                sujet: 'Build réussi',
+                corps: 'Le build a réussi. Vous pouvez maintenant procéder au déploiement.',
+                destinataires: 'kmiha.anas.ra@gmail.com'
+            )
         }
-        stage('Deliver') {
-            steps {
-                sh './jenkins/scripts/deliver.sh'
-                input message: 'Finished using the web site? (Click "Proceed" to continue)'
-                sh './jenkins/scripts/kill.sh'
-            }
+        
+        failure {
+            emailext(
+                sujet: 'Échec du build',
+                corps: 'Le build a échoué. Veuillez vérifier les logs Jenkins pour plus d\'informations.',
+                destinataires: 'votre-email@example.com'
+            )
         }
-        stage('Deploy') {
-            steps {
-                sh './jenkins/scripts/deploy.sh'
-            }
-        }*/
     }
 }
