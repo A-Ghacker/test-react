@@ -3,13 +3,8 @@ pipeline {
     environment {
         CI = 'true'
     }
-    
-    triggers {
-        pollSCM('* * * * *')
-    }
-    
     stages {
-        stage('Auto-monitoring') {
+        stage('self monitoring') {
             steps {
                 sh 'pwd'
                 sh 'ls -alihs'
@@ -17,47 +12,36 @@ pipeline {
                 sh "printenv | sort"
             }
         }
-        
         stage('Build') {
             steps {
                 sh 'npm i'
             }
         }
-        
-        stage('Tests unitaires') {
-            steps {
-                sh 'npm test'
-            }
-        }
-        
-        stage('Analyse statique du code') {
-            steps {
-                sh 'sonar-scanner'
-            }
-        }
-        
-        stage('Démarrage') {
+        stage('start'){
             steps {
                 sh 'npm start'
             }
         }
+        stage('Test') {
+            steps {
+                sh 'npm test'
+            }
+        }
+        stage('Deliver') {
+            steps {
+                sh './jenkins/scripts/deliver.sh'
+                input message: 'Finished using the web site? (Click "Proceed" to continue)'
+                sh './jenkins/scripts/kill.sh'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh './jenkins/scripts/deploy.sh'
+            }
+        }
     }
     
-    post {
-        success {
-            emailext(
-                subject: 'Build réussi',
-                body: 'Le build a réussi. Vous pouvez maintenant procéder au déploiement.',
-                to: 'kmiha.anas.ra@gmail.com'
-            )
-        }
-        
-        failure {
-            emailext(
-                subject: 'Échec du build',
-                body: 'Le build a échoué. Veuillez vérifier les logs Jenkins pour plus d\'informations.',
-                to: 'kmiha.anas.ra@gmail.com'
-            )
-        }
+    triggers {
+        pollSCM('*/5 * * * *') // Vérifie les modifications du référentiel toutes les 5 minutes
     }
 }
