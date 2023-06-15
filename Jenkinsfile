@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        label 'node_jenkins'
-    }
+    
         
     environment {
         CI = 'true'
