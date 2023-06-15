@@ -24,6 +24,18 @@ pipeline {
             }
         }
         
+        stage('Tests unitaires') {
+            steps {
+                sh 'npm test'
+            }
+        }
+        
+        stage('Analyse statique du code') {
+            steps {
+                sh 'sonar-scanner'
+            }
+        }
+        
         stage('Démarrage') {
             steps {
                 sh 'npm start'
@@ -34,17 +46,17 @@ pipeline {
     post {
         success {
             emailext(
-                sujet: 'Build réussi',
-                corps: 'Le build a réussi. Vous pouvez maintenant procéder au déploiement.',
-                destinataires: 'kmiha.anas.ra@gmail.com'
+                subject: 'Build réussi',
+                body: 'Le build a réussi. Vous pouvez maintenant procéder au déploiement.',
+                to: 'kmiha.anas.ra@gmail.com'
             )
         }
         
         failure {
             emailext(
-                sujet: 'Échec du build',
-                corps: 'Le build a échoué. Veuillez vérifier les logs Jenkins pour plus d\'informations.',
-                destinataires: 'kmiha.anas.ra@gmail.com'
+                subject: 'Échec du build',
+                body: 'Le build a échoué. Veuillez vérifier les logs Jenkins pour plus d\'informations.',
+                to: 'kmiha.anas.ra@gmail.com'
             )
         }
     }
