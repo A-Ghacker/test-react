@@ -17,16 +17,17 @@ pipeline {
                 sh 'npm i'
             }
         }
-        stage('start'){
-            steps {
-                sh 'npm start'
-            }
-        }
         stage('Test') {
             steps {
                 sh 'npm test'
             }
         }
+        stage('start'){
+            steps {
+                sh 'npm start'
+            }
+        }
+        
         
     }
     
