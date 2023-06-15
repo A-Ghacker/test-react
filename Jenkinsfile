@@ -44,7 +44,7 @@ pipeline {
             emailext(
                 sujet: 'Échec du build',
                 corps: 'Le build a échoué. Veuillez vérifier les logs Jenkins pour plus d\'informations.',
-                destinataires: 'votre-email@example.com'
+                destinataires: 'kmiha.anas.ra@gmail.com'
             )
         }
     }
